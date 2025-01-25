@@ -17,6 +17,9 @@ import TeacherProfile from "../screens/Teacher/TeacherProfile";
 import Login from "../services/Auth/Login";
 import Regester from "../services/Auth/Regester";
 import CourseDetails from "../screens/CourseDetails";
+import VideoPage from "../screens/VideoPage";
+import QuizePage from "../screens/QuizePage";
+import ArticlePage from "../screens/ArticlePage";
 
 const AppNavigation = () => {
   return (
@@ -70,6 +73,21 @@ const AppNavigation = () => {
         <Stack.Screen
           name="CourseDetails"
           component={CourseDetails}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="VideoPage"
+          component={VideoPage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ArticlePage"
+          component={ArticlePage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="QuizePage"
+          component={QuizePage}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
