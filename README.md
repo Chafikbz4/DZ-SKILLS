@@ -23,8 +23,7 @@ DZ-SKILLS is a mobile learning platform built with React Native and Expo. It off
 
 ## Setup & Run
 
-   git clone https://github.com/your-username/dz-skills.git
-   cd dz-skills
-   npm install
-
-   expo start
+    git clone https://github.com/your-username/dz-skills.git
+    cd dz-skills
+    npm install
+    expo start
