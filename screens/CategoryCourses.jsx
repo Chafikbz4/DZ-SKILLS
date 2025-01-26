@@ -1,23 +1,15 @@
-import React, { useEffect, useState } from "react";
-import {
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-  Image,
-  Dimensions,
-} from "react-native";
-import axios from "axios";
+import { Text, View, ScrollView, TouchableOpacity, Image } from "react-native";
+import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 
-const { width, height } = Dimensions.get("window");
-
-const CourseScroll = () => {
-  const [courseList, setCourseList] = useState([]);
-  const navigation = useNavigation(); // Accessing navigation
+const CategoryCourses = ({ route }) => {
   const userData = useSelector((state) => state.userData);
-  const token = userData.token;
+  const token = userData?.token;
+  const { categoryId } = route.params;
+
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -32,55 +24,37 @@ const CourseScroll = () => {
           }
         );
 
-        const coursesWithCategory = await Promise.all(
-          response.data.map(async (course) => {
-            // Fetch the category name for each course
-            id = course.category_id;
-            try {
-              const categoryResponse = await axios.post(
-                `https://dzskiils-production.up.railway.app/categories/get/${id}`,
-                {},
-                {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                  },
-                }
-              );
-
-              // Add the category name to the course object
-              course.Category.Name =
-                categoryResponse.data.Name || "No Category"; // Assign category name
-            } catch (categoryError) {
-              alert(
-                "An error occurred while fetching Categories. Please try again later."
-              );
-              course.Category.Name = "No Category"; // Set a default value if the category fetch fails
-            }
-
-            return course; // Return the updated course
-          })
+        // Filter courses based on the categoryId
+        const filteredCourses = response.data.filter(
+          (course) => course.category_id === categoryId
         );
-
-        // Update state with courses that now include category names
-        setCourseList(coursesWithCategory);
+        console.log(response.data);
+        setCourses(filteredCourses);
       } catch (error) {
-        alert(
-          "An error occurred while fetching courses. Please try again later."
-        );
+        alert("Error fetching courses:");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCourses();
-  }, [token]);
+  }, [categoryId, token]);
+
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <Text className="text-lg font-semibold">Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
-      horizontal
       showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
       style={{ margin: 10 }}
     >
-      {courseList.map((course, index) => {
+      {courses.map((course, index) => {
         return (
           <TouchableOpacity
             key={index}
@@ -174,4 +148,4 @@ const CourseScroll = () => {
   );
 };
 
-export default CourseScroll;
+export default CategoryCourses;

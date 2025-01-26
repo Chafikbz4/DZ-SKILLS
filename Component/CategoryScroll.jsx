@@ -1,53 +1,64 @@
-import { ScrollView, StyleSheet, Dimensions } from "react-native";
-import React from "react";
-import MyButtom from "./MyButtom";
-
-const { width, height } = Dimensions.get("window");
+import { ScrollView, Text, TouchableOpacity, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 const CategoryScroll = () => {
+  const userData = useSelector((state) => state.userData);
+  const authToken = userData?.token;
+  const [categoryArray, setCategories] = useState([]);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get(
+          "https://dzskiils-production.up.railway.app/categories/all",
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        setCategories(response.data);
+      } catch (error) {
+        alert("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, [authToken]);
+
+  const handleCategoryPress = (categoryId) => {
+    navigation.navigate("CategoryCourses", { categoryId });
+  };
+
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={styles.scrollViewContent}
+      className="flex-row items-center"
     >
-      <MyButtom
-        source={require("../assets/Frame 7.png")}
-        style={{ width: 200, height: 200 }}
-        buttonText="Technology & Engineering"
-      />
-      <MyButtom
-        source={require("../assets/Frame 8.png")}
-        style={{ width: 180, height: 180 }}
-      />
-      <MyButtom
-        source={require("../assets/Frame 9.png")}
-        style={{ width: 180, height: 180 }}
-        buttonText="Technology & Engineering"
-      />
-      <MyButtom
-        source={require("../assets/Frame 11.png")}
-        style={{ width: 180, height: 180 }}
-        buttonText="Technology & Engineering"
-      />
-      <MyButtom
-        source={require("../assets/Frame 11(1).png")}
-        style={{ width: 180, height: 180 }}
-        buttonText="Technology & Engineering"
-      />
-      <MyButtom
-        source={require("../assets/Frame 28.png")}
-        style={{ width: 180, height: 180 }}
-        buttonText="Technology & Engineering"
-      />
+      {categoryArray.map((category, index) => (
+        <TouchableOpacity
+          key={index}
+          className="mr-4 items-center justify-center w-44 h-44 bg-white rounded-2xl shadow-lg"
+          onPress={() => handleCategoryPress(category.ID)}
+        >
+          <Image
+            source={require("../assets/Frame 7.png")} // Replace with your dynamic category images if needed
+            className="w-full h-full rounded-2xl"
+            resizeMode="cover"
+          />
+          <Text className="absolute bottom-2 text-center text-white text-lg font-bold">
+            {category.Name}
+          </Text>
+        </TouchableOpacity>
+      ))}
     </ScrollView>
   );
 };
 
 export default CategoryScroll;
-
-const styles = StyleSheet.create({
-  scrollViewContent: {
-    alignItems: "center",
-  },
-});

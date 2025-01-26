@@ -13,14 +13,13 @@ import Home from "../screens/Home";
 import Progresse from "../screens/Progresse";
 import Search from "../screens/Search";
 import StudentProfile from "../screens/Student/StudentProfile";
-import TeacherProfile from "../screens/Teacher/TeacherProfile";
 import Login from "../services/Auth/Login";
 import Regester from "../services/Auth/Regester";
 import CourseDetails from "../screens/CourseDetails";
 import VideoPage from "../screens/VideoPage";
 import QuizePage from "../screens/QuizePage";
 import ArticlePage from "../screens/ArticlePage";
-
+import CategoryCourses from "../screens/CategoryCourses";
 const AppNavigation = () => {
   return (
     <NavigationContainer>
@@ -60,11 +59,7 @@ const AppNavigation = () => {
           component={StudentProfile}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
-          name="TeacherProfile"
-          component={TeacherProfile}
-          options={{ headerShown: false }}
-        />
+
         <Stack.Screen
           name="App"
           component={BottomTabNavigator}
@@ -88,6 +83,11 @@ const AppNavigation = () => {
         <Stack.Screen
           name="QuizePage"
           component={QuizePage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CategoryCourses"
+          component={CategoryCourses}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

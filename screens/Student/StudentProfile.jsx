@@ -1,112 +1,162 @@
-import React, { useState } from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   View,
-  SafeAreaView,
   Text,
-  TouchableOpacity,
-  TextInput,
   Alert,
+  ActivityIndicator,
+  TextInput,
+  TouchableOpacity,
+  Image,
 } from "react-native";
+import { useSelector } from "react-redux";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
+const fetchStudentData = async (id, authToken) => {
+  try {
+    const response = await axios.post(
+      `https://dzskiils-production.up.railway.app/students/GetStudent/${id}`,
+      {}, // Ensure this URL is correct
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
 const StudentProfile = () => {
-  // State to store the user's name, email, and password
-  const [name, setName] = useState("John Doe");
-  const [email, setEmail] = useState("john.doe@example.com");
-  const [password, setPassword] = useState("password123");
-  const [editing, setEditing] = useState(false); // State to toggle edit mode
+  const [studentData, setStudentData] = useState(null);
+  const [editableData, setEditableData] = useState({
+    FullName: "",
+    email: "",
+  });
+  const userData = useSelector((state) => state.userData);
+  const authToken = userData?.token;
+  const id = userData?.userID;
+  const [loading, setLoading] = useState(true);
+  const profilePicture = studentData?.profilePicture || null;
 
-  // Function to handle the edit button press
-  const handleEdit = () => {
-    setEditing(!editing); // Toggle the editing mode
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!id || !authToken) {
+        Alert.alert("Error", "User is not authenticated or ID is missing.");
+        return;
+      }
 
-  // Function to handle save changes
-  const handleSave = () => {
-    // Here you would normally handle saving the changes to a backend
-    Alert.alert("Profile Updated", "Your profile has been updated.");
-    setEditing(false); // Exit edit mode
+      try {
+        const data = await fetchStudentData(id, authToken);
+        setStudentData(data);
+        setEditableData({
+          FullName: data.FullName || "",
+          email: data.email || "",
+        });
+      } catch (error) {
+        Alert.alert(
+          "Error",
+          error.response?.data?.message ||
+            "Failed to fetch student data. Please try again."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id, authToken]);
+
+  const handleInputChange = (name, value) => {
+    setEditableData({
+      ...editableData,
+      [name]: value,
+    });
   };
 
   return (
-    <SafeAreaView className="flex-1 justify-center items-center p-5">
-      {/* Profile Picture */}
-      <View className="flex items-center mb-6">
-        <MaterialCommunityIcons name="account" color="gray" size={30} />
-        <TouchableOpacity>
-          <Text className="text-blue-500">Upload a new picture</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text className="text-red-500">Delete a Picture</Text>
-        </TouchableOpacity>
-      </View>
+    <View className="flex-1 items-center justify-center bg-gray-100">
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <View
+          className="w-full max-w-md bg-white p-6 rounded-xl shadow-md items-center"
+          style={{ height: "100%", width: "100%" }}
+        >
+          {/* Profile Picture */}
+          <View className="items-center mb-6">
+            {profilePicture ? (
+              <Image
+                source={{ uri: profilePicture }}
+                className="w-24 h-24 rounded-full"
+                resizeMode="cover"
+              />
+            ) : (
+              <MaterialCommunityIcons
+                name="account-circle"
+                size={96}
+                color="#ccc"
+              />
+            )}
+          </View>
 
-      {/* Profile Info */}
-      <View className="w-full space-y-5">
-        {/* Name Field */}
-        <View className="space-y-1">
-          <Text className="font-bold">Name:</Text>
-          {editing ? (
-            <TextInput
-              style={{ borderRadius: 8 }}
-              className="border-2 p-2"
-              value={name}
-              onChangeText={(text) => setName(text)}
-            />
-          ) : (
-            <View className="border-2 border-gray-300 p-2 rounded-lg">
-              <Text>{name}</Text>
+          {/* Buttons for changing and deleting the picture */}
+          <View className="flex-row justify-between mb-6 w-full">
+            <TouchableOpacity className="flex items-center bg-blue-500 px-4 py-2 rounded-lg flex-1 mx-2">
+              <MaterialCommunityIcons
+                name="image-edit"
+                size={24}
+                color="#fff"
+              />
+              <Text className="text-white text-sm font-medium">
+                Change Picture
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity className="flex items-center bg-red-500 px-4 py-2 rounded-lg flex-1 mx-2">
+              <MaterialCommunityIcons name="delete" size={24} color="#fff" />
+              <Text className="text-white text-sm font-medium">
+                Delete Picture
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Editable student data */}
+          {studentData && (
+            <View className="mb-6 w-full">
+              <TextInput
+                placeholder="Name"
+                value={editableData.FullName}
+                onChangeText={(text) => handleInputChange("FullName", text)}
+                className="w-full bg-gray-100 px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500 mb-4"
+              />
+              <TextInput
+                placeholder="Email"
+                value={editableData.email}
+                onChangeText={(text) => handleInputChange("email", text)}
+                className="w-full bg-gray-100 px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+              />
             </View>
           )}
-        </View>
 
-        {/* Email Field */}
-        <View className="space-y-1">
-          <Text className="font-bold">Email:</Text>
-          {editing ? (
+          {/* TextInputs for old and new passwords */}
+          <View className="space-y-4 w-full">
             <TextInput
-              style={{ borderRadius: 8 }}
-              className="border-2 p-2"
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              keyboardType="email-address"
+              placeholder="Old Password"
+              secureTextEntry
+              className="w-full bg-gray-100 px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
             />
-          ) : (
-            <View className="border-2 border-gray-300 p-2 rounded-lg">
-              <Text>{email}</Text>
-            </View>
-          )}
-        </View>
-
-        {/* Password Field */}
-        <View className="space-y-1">
-          <Text className="font-bold">Password:</Text>
-          {editing ? (
             <TextInput
-              style={{ borderRadius: 8 }}
-              className="border-2 p-2"
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              secureTextEntry={true}
+              placeholder="New Password"
+              secureTextEntry
+              className="w-full bg-gray-100 px-4 py-3 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
             />
-          ) : (
-            <View className="border-2 border-gray-300 p-2 rounded-lg">
-              <Text>{password}</Text>
-            </View>
-          )}
+          </View>
         </View>
-      </View>
-
-      {/* Edit / Save Button */}
-      <TouchableOpacity
-        onPress={editing ? handleSave : handleEdit}
-        className="mt-6 border-2 border-[#9747FF] px-6 py-2 rounded-xl"
-      >
-        <Text className="font-bold text-[#9747FF]">
-          {editing ? "Save Changes" : "Edit Profile"}
-        </Text>
-      </TouchableOpacity>
-    </SafeAreaView>
+      )}
+    </View>
   );
 };
 

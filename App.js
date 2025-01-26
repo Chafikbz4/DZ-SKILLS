@@ -1,10 +1,19 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import AppNavigation from "./navigation/AppNavigation";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Provider } from "react-redux";
+import { store } from "./Store/store";
 export default function App() {
-  return <AppNavigation />;
+  return (
+    <>
+      <Provider store={store}>
+        <StatusBar barStyle="white-content" />
+        <AppNavigation />
+      </Provider>
+    </>
+  );
 }
+<AppNavigation />;
 
 const styles = StyleSheet.create({
   container: {

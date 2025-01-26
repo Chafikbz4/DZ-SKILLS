@@ -6,7 +6,8 @@ import { useNavigation } from "@react-navigation/native";
 
 const CourseDetails = ({ route }) => {
   const navigation = useNavigation();
-  const { courseImage } = route.params;
+  const { courseId } = route.params;
+  console.log("course id: ", courseId);
   const lessons = [
     {
       id: 1,
@@ -26,7 +27,6 @@ const CourseDetails = ({ route }) => {
 
       {/* Image with Course Details */}
       <View className="relative">
-        <Image source={courseImage} className="w-full h-80" />
         {/* Course Title */}
         <Text className="absolute top-5 left-3 text-white text-lg font-bold bg-opacity-60 px-4 py-2 rounded-md">
           Build Responsive Real-World Websites with HTML and CSS

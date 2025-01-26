@@ -5,35 +5,84 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch } from "react-redux";
+import axios from "axios";
+import { GetuserDataRegister } from "../../Store/Actions";
 
 const Login = () => {
   const navigation = useNavigation();
-  const [role, setRole] = useState(""); // "Student" or "Teacher"
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState(""); // State for email
+  const [password, setPassword] = useState(""); // State for password
+  const [role, setRole] = useState("student");
 
-  const isFormValid = role && email && password; // Ensure all fields are filled
+  const isFormValid = email && password; // Ensure all fields are filled
+
+  const handleLogin = async () => {
+    if (!isFormValid) {
+      Alert.alert("Error", "Please fill in all fields.");
+      return;
+    }
+
+    const loginData = {
+      email,
+      password,
+      role,
+    };
+
+    try {
+      const response = await axios.post(
+        "https://dzskiils-production.up.railway.app/teachers/login",
+        loginData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const { token } = response.data; // Extract token and user data from the response
+        console.log("Token:", token);
+        console.log("User:", response.data);
+
+        // Dispatch user data to Redux
+        dispatch(GetuserDataRegister(response.data));
+
+        Alert.alert("Success", "Logged in successfully!", [
+          {
+            text: "OK",
+            onPress: () => navigation.replace("App"), // Redirect to App screen after login
+          },
+        ]);
+      } else {
+        Alert.alert("Error", "Failed to log in.");
+      }
+    } catch (error) {
+      if (error.response) {
+        // Server responded with an error status code
+        const errorMessage =
+          error.response.data.message || "Invalid email or password.";
+        Alert.alert("Error", errorMessage);
+      } else if (error.request) {
+        // Request was made but no response received
+        Alert.alert("Error", "No response from the server. Please try again.");
+      } else {
+        // Something else went wrong
+        console.error("Error:", error.message); // Debugging log
+        Alert.alert(
+          "Error",
+          "An unexpected error occurred. Please try again later."
+        );
+      }
+    }
+  };
 
   return (
     <View style={styles.container}>
-      {/* Role Selection */}
-      <View style={styles.dropdown}>
-        <TouchableOpacity
-          style={[styles.roleOption, role === "Student" && styles.selectedRole]}
-          onPress={() => setRole("Student")}
-        >
-          <Text style={styles.roleText}>Student</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.roleOption, role === "Teacher" && styles.selectedRole]}
-          onPress={() => setRole("Teacher")}
-        >
-          <Text style={styles.roleText}>Teacher</Text>
-        </TouchableOpacity>
-      </View>
-
       {/* Email Input */}
       <TextInput
         style={styles.input}
@@ -52,12 +101,22 @@ const Login = () => {
         secureTextEntry
       />
 
+      {/* Link to Register Page */}
+      <TouchableOpacity
+        style={{ width: "100%" }}
+        onPress={() => {
+          navigation.navigate("Regester");
+        }}
+      >
+        <Text style={{ color: "purple", marginBottom: 10 }}>
+          Do not have an account?
+        </Text>
+      </TouchableOpacity>
+
       {/* Login Button */}
       <TouchableOpacity
         style={[styles.loginButton, !isFormValid && styles.disabledButton]}
-        onPress={() => {
-          if (isFormValid) navigation.replace("App");
-        }}
+        onPress={handleLogin}
         disabled={!isFormValid}
       >
         <Text style={styles.loginButtonText}>Login</Text>
@@ -76,32 +135,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
     paddingHorizontal: 20,
   },
-  dropdown: {
-    flexDirection: "row",
-    marginBottom: 20,
-    justifyContent: "space-between",
-  },
-  roleOption: {
-    backgroundColor: "#EAEAEA",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    marginHorizontal: 5,
-  },
-  selectedRole: {
-    backgroundColor: "#9747FF",
-  },
-  roleText: {
-    color: "black",
-    fontWeight: "bold",
-  },
   input: {
     width: "100%",
     padding: 15,
     borderWidth: 1,
     borderColor: "#CCC",
     borderRadius: 10,
-    marginBottom: 20,
+    marginBottom: 15,
     backgroundColor: "white",
   },
   loginButton: {

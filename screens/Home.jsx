@@ -17,12 +17,31 @@ import Title from "../Component/Title";
 import CourseScroll from "../Component/CourseScroll";
 import ComentsScroll from "../Component/ComentsScroll";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
+import { TouchableOpacityComponent } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage for token storage
+import { useNavigation } from "@react-navigation/native";
 const { width, height } = Dimensions.get("window");
 const Home = () => {
+  const navigation = useNavigation();
   const drawerRef = useRef(null);
-
+  const userData = useSelector((state) => state.userData);
   const openDrawer = () => {
     drawerRef.current.openDrawer();
+  };
+
+  const handleLogout = async () => {
+    try {
+      // Clear AsyncStorage
+
+      // Redirect to Login page
+      navigation.replace("Login");
+
+      // Optional: Show a success message
+    } catch (error) {
+      Alert.alert("Logout Error:", error);
+      Alert.alert("Error", "An error occurred while logging out.");
+    }
   };
 
   return (
@@ -65,7 +84,9 @@ const Home = () => {
           >
             <View style={styles.contentContainer}>
               <View style={styles.textContainer}>
-                <Text style={styles.welcomeText}>Welcome Back Azouaou</Text>
+                <Text style={styles.welcomeText}>
+                  Welcome Back {userData.username}
+                </Text>
                 <Text style={styles.subtitleText}>
                   Making Learning Easy, Anytime, Anywhere
                 </Text>
