@@ -1,12 +1,23 @@
-import { Text, View, ScrollView, TouchableOpacity, Image } from "react-native";
+import {
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+
+const { width, height } = Dimensions.get("window");
 
 const CategoryCourses = ({ route }) => {
   const userData = useSelector((state) => state.userData);
   const token = userData?.token;
   const { categoryId } = route.params;
+  const navigation = useNavigation();
 
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
