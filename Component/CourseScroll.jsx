@@ -10,7 +10,7 @@ import {
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
-
+import { API_URL } from "@env";
 const { width, height } = Dimensions.get("window");
 
 const CourseScroll = () => {
@@ -22,15 +22,12 @@ const CourseScroll = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get(
-          "https://dzskiils-production.up.railway.app/Courses/all",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await axios.get(`${API_URL}Courses/all`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
         const coursesWithCategory = await Promise.all(
           response.data.map(async (course) => {
@@ -38,7 +35,7 @@ const CourseScroll = () => {
             id = course.category_id;
             try {
               const categoryResponse = await axios.post(
-                `https://dzskiils-production.up.railway.app/categories/get/${id}`,
+                `${API_URL}categories/get/${id}`,
                 {},
                 {
                   headers: {
@@ -150,23 +147,7 @@ const CourseScroll = () => {
             </View>
 
             {/* Display Course ID and Category */}
-            <View
-              style={{
-                marginTop: 10,
-                padding: 5,
-                backgroundColor: "#f2f2f2",
-                borderRadius: 5,
-              }}
-            >
-              <Text style={{ fontSize: 14 }}>
-                <Text style={{ fontWeight: "bold" }}>Course ID: </Text>
-                {course.ID}
-              </Text>
-              <Text style={{ fontSize: 14 }}>
-                <Text style={{ fontWeight: "bold" }}>Category: </Text>
-                {course.Category.Name || "No Category"}
-              </Text>
-            </View>
+            
           </TouchableOpacity>
         );
       })}

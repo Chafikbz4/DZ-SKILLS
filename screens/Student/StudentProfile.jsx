@@ -11,11 +11,11 @@ import {
 } from "react-native";
 import { useSelector } from "react-redux";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
+import { API_URL } from "@env";
 const fetchStudentData = async (id, authToken) => {
   try {
     const response = await axios.post(
-      `https://dzskiils-production.up.railway.app/students/GetStudent/${id}`,
+      `${API_URL}students/GetStudent/${id}`,
       {}, // Ensure this URL is correct
       {
         headers: {

@@ -3,7 +3,7 @@ import React from "react";
 import { StatusBar } from "expo-status-bar";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-
+import { API_URL } from '@env';
 const CourseDetails = ({ route }) => {
   const navigation = useNavigation();
   const { courseId } = route.params;

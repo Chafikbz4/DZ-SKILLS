@@ -10,7 +10,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
-
+import { API_URL } from '@env';
 const { width, height } = Dimensions.get("window");
 
 const CategoryCourses = ({ route }) => {
@@ -26,7 +26,7 @@ const CategoryCourses = ({ route }) => {
     const fetchCourses = async () => {
       try {
         const response = await axios.get(
-          "https://dzskiils-production.up.railway.app/Courses/all",
+          `${API_URL}Courses/all`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

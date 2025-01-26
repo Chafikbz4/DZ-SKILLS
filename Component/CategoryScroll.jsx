@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { useNavigation } from "@react-navigation/native";
+import { API_URL } from "@env";
 
 const CategoryScroll = () => {
   const userData = useSelector((state) => state.userData);
@@ -13,15 +14,12 @@ const CategoryScroll = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          "https://dzskiils-production.up.railway.app/categories/all",
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await axios.get(`${API_URL}categories/all`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            "Content-Type": "application/json",
+          },
+        });
         setCategories(response.data);
       } catch (error) {
         alert("Error fetching categories:", error);

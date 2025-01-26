@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios"; // Import axios
-
+import { API_URL } from "@env";
 const Regester = () => {
   const navigation = useNavigation();
   const [FullName, setFullName] = useState("");
@@ -45,7 +45,7 @@ const Regester = () => {
 
     try {
       const response = await axios.post(
-        "https://dzskiils-production.up.railway.app/students/CreateStudent",
+        `${API_URL}students/CreateStudent`,
         studentData,
         {
           headers: {

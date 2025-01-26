@@ -21,7 +21,9 @@ import { useSelector } from "react-redux";
 import { TouchableOpacityComponent } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage"; // Import AsyncStorage for token storage
 import { useNavigation } from "@react-navigation/native";
+import { API_URL } from "@env";
 const { width, height } = Dimensions.get("window");
+
 const Home = () => {
   const navigation = useNavigation();
   const drawerRef = useRef(null);

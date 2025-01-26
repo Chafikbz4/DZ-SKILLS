@@ -10,6 +10,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 import axios from "axios";
+import { API_URL } from "@env";
 import { GetuserDataRegister } from "../../Store/Actions";
 
 const Login = () => {
@@ -34,15 +35,11 @@ const Login = () => {
     };
 
     try {
-      const response = await axios.post(
-        "https://dzskiils-production.up.railway.app/teachers/login",
-        loginData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`${API_URL}teachers/login`, loginData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
       if (response.status === 200) {
         const { token } = response.data; // Extract token and user data from the response
