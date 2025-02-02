@@ -2,6 +2,9 @@
 
 DZ-SKILLS is a mobile learning platform built with React Native and Expo. It offers educational content, courses, and skill-building resources to help users learn and grow.
 
+The Link to install the app in your Android Phone:
+    https://expo.dev/accounts/chafikbz/projects/DZ-SKILLS/builds/7591fdcc-c6d5-45b9-8e18-24359f2d543c
+
 ---
 
 ## Features
